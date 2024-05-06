@@ -170,6 +170,13 @@ class BookmarkApp(QMainWindow):
                         item.setFlags(item.flags() | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEditable)
                     self.table.setItem(row, col, item)
 
+                # Highlight due date column if the due date has expired
+                due_date_item = self.table.item(row, 5)
+                if due_date_item:
+                    due_date = datetime.datetime.strptime(due_date_item.text(), "%Y-%m-%d")
+                    if due_date < datetime.datetime.now():
+                        due_date_item.setForeground(QtGui.QColor("red"))
+
                 # Add Read, Delete, and Update Due Date buttons to each row
                 read_button = QPushButton("Read")
                 read_button.clicked.connect(
@@ -221,7 +228,7 @@ class BookmarkApp(QMainWindow):
             self.show_error(f"Database error: {e}")
 
     def update_due_date(self, id):
-        # Update the due date of a bookmark
+        # Update the due date of a bookmark in the database
         new_due_date, ok = self.get_new_due_date()
         if ok:
             try:
